@@ -1,0 +1,52 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/ItemInWorldManager.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Event;
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.Player.BlockBreakEvent;
+import net.minecraft.server.Plugins.Events.Player.ItemUseEvent;
+@@end
+
+@@match
+            int var4 = this.theWorld.getBlockId(par1, par2, par3);
+@@end
+
+@@replace
+            int var4 = this.theWorld.getBlockId(par1, par2, par3);
+            
+        	// GravyMod
+            Block block = Block.blocksList[var4];
+            Event event = Events.fireEvent(new BlockBreakEvent(thisPlayerMP, block));
+        	
+            if (event.isCancelled()) {
+            	this.thisPlayerMP.playerNetServerHandler.sendPacket(new Packet53BlockChange(par1, par2, par3, this.theWorld));
+            	cancelDestroyingBlock(par1, par2, par3);
+            	return false;
+            }
+            // GravyMod
+@@end
+
+@@match
+        ItemStack var6 = par3ItemStack.useItemRightClick(par2World, par1EntityPlayer);
+@@end
+
+@@replace
+        ItemStack var6 = par3ItemStack.useItemRightClick(par2World, par1EntityPlayer);
+
+        // GravyMod
+        Event event = Events.fireEvent(new ItemUseEvent(thisPlayerMP, par3ItemStack));
+        
+        if (event.isCancelled()) {
+        	return false;
+        }
+        // GravyMod
+@@end

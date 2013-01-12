@@ -1,0 +1,52 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/NetLoginHandler.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.Player.PlayerLoginEvent;
+@@end
+
+@@match
+    public void initializePlayerConnection()
+    {
+        String var1 = this.mcServer.getConfigurationManager().allowUserToConnect(this.myTCPConnection.getRemoteAddress(), this.clientUsername);
+
+        if (var1 != null)
+        {
+            this.kickUser(var1);
+        }
+        else
+        {
+            EntityPlayerMP var2 = this.mcServer.getConfigurationManager().createPlayerForUser(this.clientUsername);
+
+@@end
+
+@@replace
+    public void initializePlayerConnection()
+    {
+        String var1 = this.mcServer.getConfigurationManager().allowUserToConnect(this.myTCPConnection.getRemoteAddress(), this.clientUsername);
+
+        if (var1 != null)
+        {
+            this.kickUser(var1);
+        }
+        else
+        {
+            EntityPlayerMP var2 = this.mcServer.getConfigurationManager().createPlayerForUser(this.clientUsername);
+            
+            // GravyMod
+            PlayerLoginEvent e = (PlayerLoginEvent) Events.fireEvent(new PlayerLoginEvent(var2));
+            
+            if (e.isCancelled()) {
+            	this.kickUser(e.getKickMessage());
+            }
+            // GravyMod
+@@end

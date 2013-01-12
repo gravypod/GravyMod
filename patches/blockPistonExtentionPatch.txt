@@ -1,0 +1,39 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/BlockPistonExtension.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Event;
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.PistonPullBlockEvent;
+@@end
+
+@@match
+            Block.blocksList[var7].onNeighborBlockChange(par1World, par2 - Facing.offsetsXForSide[var6], par3 - Facing.offsetsYForSide[var6], par4 - Facing.offsetsZForSide[var6], par5);
+@@end
+
+@@replace
+        	// GravyMod TODO: Fix this to work correctly!
+        	int x = par2 - Facing.offsetsXForSide[var6];
+        	int y = par3 - Facing.offsetsYForSide[var6];
+        	int z = par4 - Facing.offsetsZForSide[var6];
+        	
+        	Block block =  Block.blocksList[var7];
+        	
+        	if (par1World.blockExists(x, y, z)) {
+            	Event event = Events.fireEvent(new PistonPullBlockEvent(par1World, new ChunkPosition(x, y, z)));
+            	
+            	if (event.isCancelled()) {
+            		return;
+            	}
+        	}
+        	
+        	block.onNeighborBlockChange(par1World, x, y, z, par5); // GravyMod 
+@@end

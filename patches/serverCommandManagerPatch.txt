@@ -1,0 +1,20 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/ServerCommandManager.java
+
+@@match
+        CommandBase.setAdminCommander(this);
+    }
+@@end
+
+@@replace
+        CommandBase.setAdminCommander(this);
+    }
+    
+    // GravyMod
+    @Override
+    public ICommand registerCommand(ICommand par1iCommand) {
+    	return super.registerCommand(par1iCommand);
+    }
+	// GravyMod
+@@end

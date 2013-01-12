@@ -1,0 +1,42 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/BlockPistonBase.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.PistonExtendEvent;
+@@end
+
+@@match
+    private static boolean canExtend(World par0World, int par1, int par2, int par3, int par4)
+    {
+        int var5 = par1 + Facing.offsetsXForSide[par4];
+        int var6 = par2 + Facing.offsetsYForSide[par4];
+        int var7 = par3 + Facing.offsetsZForSide[par4];
+        int var8 = 0;
+@@end
+
+@@replace
+    private boolean canExtend(World par0World, int par1, int par2, int par3, int par4)
+    {
+        int var5 = par1 + Facing.offsetsXForSide[par4];
+        int var6 = par2 + Facing.offsetsYForSide[par4];
+        int var7 = par3 + Facing.offsetsZForSide[par4];
+        int var8 = 0;
+        
+        // GravyMod
+        PistonExtendEvent event = (PistonExtendEvent) Events.fireEvent(new PistonExtendEvent(par0World, this, new ChunkCoordinates(var5, var6, var7)));
+        
+        if (event.isCancelled()) {
+        	return false;
+        }
+        
+        // GravyMod
+@@end

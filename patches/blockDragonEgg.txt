@@ -1,0 +1,38 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/BlockDragonEgg.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.BlockMoveEvent;
+@@end
+
+@@match
+                if (par1World.getBlockId(var6, var7, var8) == 0)
+                {
+@@end
+
+@@replace
+                if (par1World.getBlockId(var6, var7, var8) == 0)
+                {
+                	// GravyMod
+                	BlockMoveEvent moveEvent = (BlockMoveEvent)Events.fireEvent(new BlockMoveEvent(par1World, this, new ChunkPosition(var6, var7, var8)));
+                    
+                	if (moveEvent.isCancelled()) {
+                		return;
+                	} else {
+                		ChunkPosition position = moveEvent.getTo();
+                		var6 = position.x;
+                		var7 = position.y;
+                		var8 = position.z;
+                	}
+                	
+                	// GravyMod
+@@end

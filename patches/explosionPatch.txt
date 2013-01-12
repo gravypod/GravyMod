@@ -1,0 +1,59 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/Explosion.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.ExplosionEvent;
+@@end
+
+@@match
+        this.affectedBlockPositions.addAll(var2);
+@@end
+
+@@replace
+        // GravyMod
+        ExplosionEvent event = (ExplosionEvent) Events.fireEvent(new ExplosionEvent(this, this.worldObj, var2));
+        
+        var2 = event.getChunkPossition();
+        
+        if (event.isCancelled()) {
+        	isCancelled = true;
+        	var2.clear();
+        	this.affectedBlockPositions.addAll(var2);
+        	return;
+        }
+        // GravyMod
+@@end
+
+@@match
+    public List affectedBlockPositions = new ArrayList();
+@@end
+
+@@replace
+    public List affectedBlockPositions = new ArrayList();
+    boolean isCancelled = false; // GravyMod
+@@end
+
+@@match
+        this.worldObj.playSoundEffect(this.explosionX, this.explosionY, this.explosionZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+@@end
+
+@@replace
+    	
+    	// GravyMod
+    	if (isCancelled) {
+    		return;
+    	}
+    	// GravyMod
+		
+        this.worldObj.playSoundEffect(this.explosionX, this.explosionY, this.explosionZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		
+@@end

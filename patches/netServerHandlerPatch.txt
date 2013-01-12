@@ -1,0 +1,59 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/NetServerHandler.java
+
+@@match
+                if (par1Packet10Flying.moving && par1Packet10Flying.yPosition == -999.0D && par1Packet10Flying.stance == -999.0D)
+                {
+                    par1Packet10Flying.moving = false;
+                }
+
+                if (par1Packet10Flying.moving)
+                {
+@@end
+
+@@replace
+                if (par1Packet10Flying.moving && par1Packet10Flying.yPosition == -999.0D && par1Packet10Flying.stance == -999.0D)
+                {
+                    par1Packet10Flying.moving = false;
+                }
+
+                if (par1Packet10Flying.moving)
+                {
+                	// GravyMod	
+                    int lastx = (int) playerEntity.posX, lasty = (int) playerEntity.posY, lastz = (int) playerEntity.posZ;
+                    int x = (int) par1Packet10Flying.xPosition, y = (int) par1Packet10Flying.yPosition, z = (int) par1Packet10Flying.zPosition;
+                    
+                    if (lastx != x || lasty != y || lastz != z) {
+                    	
+                    	ChunkPosition from = new ChunkPosition(lastx, lasty, lastz);
+                    	
+                    	ChunkPosition to = new ChunkPosition(x, y, z);
+                    	
+                    	PlayerMoveEvent event = (PlayerMoveEvent) Events.fireEvent(new PlayerMoveEvent(playerEntity, playerEntity.worldObj, from, to));
+                    	
+                    	if (event.isCancelled()) {
+                    		
+                    		ChunkPosition pos = event.getFrom();
+                    		
+                    		par1Packet10Flying.xPosition = pos.x;
+                    		par1Packet10Flying.yPosition = pos.y;
+                    		par1Packet10Flying.zPosition = pos.z;
+                    		
+                    	}
+                    	
+                    }
+                    // GravyMod
+@@end
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.Player.PlayerMoveEvent;
+@@end

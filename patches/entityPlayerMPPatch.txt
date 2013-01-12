@@ -1,0 +1,35 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/entityPlayerMP.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Event;
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.Player.PlayerDamageEvent;
+@@end
+
+@@match
+    public boolean attackEntityFrom(DamageSource par1DamageSource, int par2)
+    {
+@@end
+
+@@replace
+    public boolean attackEntityFrom(DamageSource par1DamageSource, int par2)
+    {
+    	
+    	// GravyPod
+    	Event event = Events.fireEvent(new PlayerDamageEvent(par1DamageSource, this));
+    	
+    	if (event.isCancelled()) {
+    		return false;
+    	}
+    	
+    	// GravyMod
+@@end

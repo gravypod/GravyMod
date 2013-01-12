@@ -1,0 +1,33 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/BlockFire.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.FireSpreadEvent;
+@@end
+
+@@match
+    private boolean canNeighborBurn(World par1World, int par2, int par3, int par4)
+    {
+@@end
+
+@@replace
+    private boolean canNeighborBurn(World par1World, int par2, int par3, int par4)
+    {
+    	
+    	// GravyMod
+    	FireSpreadEvent event = (FireSpreadEvent) Events.fireEvent(new FireSpreadEvent(this, par1World, new ChunkPosition(par2, par3, par4)));
+    	
+    	if (event.isCancelled()) {
+    		return false;
+    	}
+    	// GravyMod
+@@end

@@ -1,0 +1,27 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/server/MinecraftServer.java
+
+@@match
+    private final ICommandManager commandManager;
+
+@@end
+
+@@replace
+    private final ServerCommandManager commandManager; // GravyMod
+
+@@end
+
+@@match
+    public String getServerModName()
+    {
+        return "vanilla";
+    }
+@@end
+
+@@replace
+    public String getServerModName()
+    {
+        return "GravyMod"; // GravyMod
+    }
+@@end

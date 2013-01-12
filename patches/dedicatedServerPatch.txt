@@ -1,0 +1,83 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/DedicatedServer.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.PluginManager; // GravyMod
+@@end
+
+@@match
+    private final List pendingCommandList = Collections.synchronizedList(new ArrayList());
+@@end
+
+@@replace
+    /** Plugin loading */
+    public static PluginManager pluginLoader; // GravyMod
+	
+    private final List pendingCommandList = Collections.synchronizedList(new ArrayList());
+@@end
+
+@@match
+        super(par1File);
+@@end
+
+@@replace
+        super(par1File);
+        pluginLoader = new PluginManager(logger); // GravyMod
+@@end
+
+@@match
+        if (this.settings.getBooleanProperty("enable-rcon", false))
+        {
+            logger.info("Starting remote control listener");
+            this.theRConThreadMain = new RConThreadMain(this);
+            this.theRConThreadMain.startThread();
+        }
+
+        return true;
+    }
+@@end
+
+@@replace
+        if (this.settings.getBooleanProperty("enable-rcon", false))
+        {
+            logger.info("Starting remote control listener");
+            this.theRConThreadMain = new RConThreadMain(this);
+            this.theRConThreadMain.startThread();
+        }
+	
+        // GravyMod start
+        logger.info("Starting loading plugins!");
+        try {
+        pluginLoader.loadPlugins();
+        } catch (NullPointerException e) {
+        	
+        	for (StackTraceElement el : e.getStackTrace()) {
+        		
+        		logger.info(el.toString());
+        		
+        	}
+        	
+        }
+        logger.info("Done!");
+        // GravyMod end
+        
+        return true;
+    }
+    
+    // GravyMod
+    @Override
+    public void stopServer() {
+    	pluginLoader.disablePlugins();
+    	super.stopServer();
+    }
+    // GravyMod
+@@end
+

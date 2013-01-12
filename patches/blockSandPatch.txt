@@ -1,0 +1,31 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/BlockSand.java
+
+@@match
+            byte var8 = 32;
+@@end
+
+@@replace
+        	// GravyMod
+        	BlockFallEvent event = (BlockFallEvent) Events.fireEvent(new BlockFallEvent(par1World, this, new ChunkPosition(par2, par3, par4)));
+        	
+        	if (event.isCancelled()) {
+        		return;
+        	}
+        	// GravyMod
+        	
+            byte var8 = 32;
+@@end
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.BlockFallEvent;
+@@end

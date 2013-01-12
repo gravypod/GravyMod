@@ -1,0 +1,34 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/ItemFood.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.Events.Event;
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.Player.FoodEatenEvent;
+@@end
+
+@@match
+    public ItemStack onFoodEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
+    {
+@@end
+
+@@replace
+    public ItemStack onFoodEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
+    {
+    	
+    	// GravyMod
+    	Event event = Events.fireEvent(new FoodEatenEvent(par1ItemStack, par2World, par3EntityPlayer));
+    	
+    	if (event.isCancelled()) {
+    		return par1ItemStack;
+    	}
+    	// GravyMod
+@@end

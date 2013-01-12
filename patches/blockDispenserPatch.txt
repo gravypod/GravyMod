@@ -1,0 +1,25 @@
+# This is a sample patch file. None of the contents are actually valid.
+
+@@file mcp/src/minecraft_server/net/minecraft/src/BlockDispenser.java
+
+@@match
+package net.minecraft.src;
+
+@@end
+
+@@replace
+package net.minecraft.src;
+
+import net.minecraft.server.Plugins.BlockUtil;
+import net.minecraft.server.Plugins.Events.Events;
+import net.minecraft.server.Plugins.Events.World.BlockMoveEvent;
+@@end
+
+@@match
+    private void dispense(World par1World, int par2, int par3, int par4)
+@@end
+
+@@replace
+    // GravyMod private to public
+    private void dispense(World par1World, int par2, int par3, int par4)
+@@end
