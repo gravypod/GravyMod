@@ -6,7 +6,7 @@ Q/A:
 	A: Yes!
 	
 	Q: Is it easy to use?
-	A: If you have uses Minecraft_Server.jar before, its the same exact thing.
+	A: If you have used Minecraft_Server.jar before, its the same exact thing.
 
 
 How to setup workspace:
