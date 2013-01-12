@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.Plugins.BlockUtil;
 import net.minecraft.server.Plugins.Events.EventHandler;
 import net.minecraft.server.Plugins.Events.EventPriority;
 import net.minecraft.server.Plugins.Events.Listener;
@@ -18,6 +19,7 @@ import net.minecraft.server.Plugins.Events.World.FireSpreadEvent;
 import net.minecraft.server.Plugins.Events.World.PistonPullBlockEvent;
 import net.minecraft.src.Block;
 import net.minecraft.src.ChunkPosition;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;
 
 public class PlayerListener implements Listener {
@@ -68,10 +70,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void explosionEvent(ExplosionEvent event) {
 	
-		Iterator<Block> blocks;
-		Block block = null;
-		for (blocks = event.getBlocks().iterator(); blocks.hasNext(); block = blocks.next()) {
-			if (block == Block.blockDiamond) {
+		Iterator<ChunkPosition> blocks;
+		ChunkPosition block = null;
+		for (blocks = event.getChunkPossition().iterator(); blocks.hasNext(); block = blocks.next()) {
+			if (BlockUtil.getBlock(event.getWorld(), block.x, block.y, block.z) == Block.blockDiamond) {
 				blocks.remove();
 			}
 		}
@@ -106,7 +108,16 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void fireSpreadEvent(FireSpreadEvent event) {
 	
-		event.getWorld().getPlayerEntityByName("gravypod").sendChatToPlayer(event.getSpreadToBlock().toString());
+		EntityPlayer e = event.getWorld().getPlayerEntityByName("gravypod");
+		
+		Block b = BlockUtil.getBlock(event.getWorld(), event.getSpreadingTo());
+		
+		if (b == null) { // Air
+			return;
+		}
+		
+		e.sendChatToPlayer(b.toString());
+		
 		event.setCancelled(true);
 		
 	}
