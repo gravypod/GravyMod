@@ -20,15 +20,18 @@ public class PluginAssistant {
 	
 	/** Main Logger that is shown in the GUI */
 	private final Logger log;
+
+	private final PluginManager pm;
 	
 	/**
 	 * Create a plugin assistant
 	 * @param eventManager - Current servers {@link EventManager} instance
 	 * @param logger - Current servers {@link Logger} instance
 	 */
-	public PluginAssistant(EventManager eventManager, Logger logger) {
+	public PluginAssistant(EventManager eventManager, PluginManager pm, Logger logger) {
 	
 		this.eventManager = eventManager;
+		this.pm = pm;
 		log = logger;
 	}
 	
@@ -82,6 +85,14 @@ public class PluginAssistant {
 	public EventManager getEventManager() {
 	
 		return eventManager;
+	}
+	
+	/**
+	 * Get an instance of the plugin manager
+	 * @return
+	 */
+	public PluginManager getPluginManager() {
+		return pm;
 	}
 	
 }

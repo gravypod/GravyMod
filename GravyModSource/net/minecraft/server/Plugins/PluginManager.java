@@ -5,13 +5,16 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.Plugins.Commands.SetupGravyModCommands;
 import net.minecraft.server.Plugins.Events.EventManager;
 
 /**
@@ -48,7 +51,9 @@ public class PluginManager {
 		
 		server = MinecraftServer.getServer();
 		
-		assistant = new PluginAssistant(eventManager, log);
+		assistant = new PluginAssistant(eventManager, this, log);
+		
+		SetupGravyModCommands.setup(server.getCommandManager(), this);
 		
 	}
 	
@@ -188,6 +193,22 @@ public class PluginManager {
 	public EventManager getEventManager() {
 	
 		return eventManager;
+	}
+	
+	/**
+	 * Get a {@link Collection} of enabled {@link Plugin}s
+	 * @return - {@link Collection} of {@link Plugin}s
+	 */
+	public Collection<Plugin> getEnabledPlugins() {
+		return loadedPlugins.values();
+	}
+	
+	/**
+	 * Get a {@link Collection} of enabled {@link Plugin}'s Names
+	 * @return - {@link Collection} of {@link String}s
+	 */
+	public Set<String> getEnabledPluginsNames() {
+		return loadedPlugins.keySet();
 	}
 	
 }
