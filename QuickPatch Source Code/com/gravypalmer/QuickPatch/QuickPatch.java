@@ -1,3 +1,9 @@
+/*
+ * This file is a component of QuickPatch utility for GravyMod, and was written by ElgarL.
+ * Distributed under the The Attribution-NonCommercial-ShareAlike License 3.0 (CC BY-NC-SA)
+ * http://creativecommons.org/licenses/by-nc-sa/3.0/
+ */
+
 package com.gravypalmer.QuickPatch;
 
 import java.io.File;
@@ -130,7 +136,8 @@ public class QuickPatch {
 					 * section.
 					 */
 					if (line.trim().equalsIgnoreCase("@@end")) {
-						stringReplace.setLength(stringReplace.length() - (System.getProperty("line.separator").length()));
+						if (stringReplace.length() > 0)
+							stringReplace.setLength(stringReplace.length() - (System.getProperty("line.separator").length()));
 						break;
 					}
 
@@ -154,7 +161,7 @@ public class QuickPatch {
 					flagPatch("ERROR: Source file not found - " + fileName + " @ (" + patchFile + ":" + fileLine + ").");
 					error = 1;
 
-				} else if (foundFile.contains(stringReplace.toString())) {
+				} else if ((stringReplace.length() > 0) && foundFile.contains(stringReplace.toString())) {
 
 					flagPatch("ERROR: Patch already installed for line " + matchLine + " in " + patchFile);
 

@@ -1,3 +1,10 @@
+/*
+ * This file is a component of QuickPatch utility for GravyMod, borrowed from the
+ * Towny Advanced project which is maintained by by ElgarL.
+ * Distributed under the The Attribution-NonCommercial-ShareAlike License 3.0 (CC BY-NC-SA)
+ * http://creativecommons.org/licenses/by-nc-sa/3.0/
+ */
+
 package com.gravypalmer.QuickPatch; // elgar says its ok!
 
 import java.io.BufferedReader;
@@ -7,125 +14,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class FileMgmt {
-	
-	public static void checkFolders(String[] folders) {
-	
-		for (String folder : folders) {
-			File f = new File(folder);
-			if (!(f.exists() && f.isDirectory()))
-				f.mkdir();
-		}
-	}
-	
-	public static void checkFiles(String[] files) throws IOException {
-	
-		for (String file : files) {
-			File f = new File(file);
-			if (!(f.exists() && f.isFile()))
-				f.createNewFile();
-		}
-	}
 	
 	public static String fileSeparator() {
 	
 		return System.getProperty("file.separator");
-	}
-	
-	// http://www.java-tips.org/java-se-tips/java.io/how-to-copy-a-directory-from-one-location-to-another-loc.html
-	public static void copyDirectory(File sourceLocation, File targetLocation) throws IOException {
-	
-		synchronized(sourceLocation) {
-			if (sourceLocation.isDirectory()) {
-				if (!targetLocation.exists())
-					targetLocation.mkdir();
-				
-				String[] children = sourceLocation.list();
-				for (int i = 0; i < children.length; i++)
-					copyDirectory(new File(sourceLocation, children[i]), new File(targetLocation, children[i]));
-			} else {
-				OutputStream out = new FileOutputStream(targetLocation);
-				try {
-					InputStream in = new FileInputStream(sourceLocation);
-					// Copy the bits from in stream to out stream.
-					byte[] buf = new byte[1024];
-					int len;
-					while((len = in.read(buf)) > 0)
-						out.write(buf, 0, len);
-					in.close();
-					out.close();
-				} catch (IOException ex) {
-					// failed to access file.
-					System.out.println("Error: Could not access: " + sourceLocation);
-				}
-				out.close();
-			}
-		}
-	}
-	
-	public static File CheckYMLExists(File file) {
-	
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return file;
-	}
-	
-	public static File unpackResourceFile(String filePath, String resource, String defaultRes) {
-	
-		// open a handle to yml file
-		File file = new File(filePath);
-		
-		if ((file.exists())/*
-							 * && (!filePath.contains(FileMgmt.fileSeparator() +
-							 * defaultRes))
-							 */)
-			return file;
-		
-		String resString;
-		
-		/*
-		 * create the file as it doesn't exist, or it's the default file so
-		 * refresh just in case.
-		 */
-		try {
-			checkFiles(new String[] { filePath });
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		// Populate a new file
-		try {
-			resString = convertStreamToString("/" + resource);
-			FileMgmt.stringToFile(resString, filePath);
-			
-		} catch (IOException e) {
-			// No resource file found
-			try {
-				resString = convertStreamToString("/" + defaultRes);
-				FileMgmt.stringToFile(resString, filePath);
-			} catch (IOException e1) {
-				// Default resource not found
-				e1.printStackTrace();
-			}
-		}
-		
-		return file;
 	}
 	
 	// pass a resource name and it will return it's contents as a string
@@ -244,172 +142,4 @@ public class FileMgmt {
 		}
 	}
 	
-	// move a file to a sub directory
-	public static void moveFile(File sourceFile, String targetLocation) throws IOException {
-	
-		synchronized(sourceFile) {
-			if (sourceFile.isFile()) {
-				// check for an already existing file of that name
-				File f = new File((sourceFile.getParent() + fileSeparator() + targetLocation));
-				if ((f.exists() && f.isFile()))
-					f.delete();
-				// Move file to new directory
-				boolean success = sourceFile.renameTo(new File((sourceFile.getParent() + fileSeparator() + targetLocation), sourceFile.getName()));
-				if (!success) {
-					// File was not successfully moved
-				}
-			}
-		}
-	}
-	
-	public static void zipDirectory(File sourceFolder, File destination) throws IOException {
-	
-		synchronized(sourceFolder) {
-			ZipOutputStream output = new ZipOutputStream(new FileOutputStream(destination));
-			recursiveZipDirectory(sourceFolder, output);
-			output.close();
-		}
-	}
-	
-	public static void zipDirectories(File[] sourceFolders, File destination) throws IOException {
-	
-		synchronized(sourceFolders) {
-			ZipOutputStream output = new ZipOutputStream(new FileOutputStream(destination));
-			for (File sourceFolder : sourceFolders)
-				recursiveZipDirectory(sourceFolder, output);
-			output.close();
-		}
-	}
-	
-	public static void recursiveZipDirectory(File sourceFolder, ZipOutputStream zipStream) throws IOException {
-	
-		synchronized(sourceFolder) {
-			
-			String[] dirList = sourceFolder.list();
-			byte[] readBuffer = new byte[2156];
-			int bytesIn = 0;
-			for (int i = 0; i < dirList.length; i++) {
-				File f = new File(sourceFolder, dirList[i]);
-				if (f.isDirectory()) {
-					recursiveZipDirectory(f, zipStream);
-					continue;
-				} else if (f.isFile() && f.canRead()) {
-					FileInputStream input = new FileInputStream(f);
-					ZipEntry anEntry = new ZipEntry(f.getPath());
-					zipStream.putNextEntry(anEntry);
-					while((bytesIn = input.read(readBuffer)) != -1)
-						zipStream.write(readBuffer, 0, bytesIn);
-					input.close();
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Delete file, or if path represents a directory, recursively delete it's
-	 * contents beforehand.
-	 */
-	public static void deleteFile(File file) {
-	
-		synchronized(file) {
-			
-			if (file.isDirectory()) {
-				File[] children = file.listFiles();
-				if (children != null) {
-					for (File child : children)
-						deleteFile(child);
-				}
-				children = file.listFiles();
-				if (children == null || children.length == 0) {
-					if (!file.delete())
-						System.out.println("Error: Could not delete folder: " + file.getPath());
-				}
-			} else if (file.isFile()) {
-				if (!file.delete())
-					System.out.println("Error: Could not delete file: " + file.getPath());
-			}
-		}
-	}
-	
-	/**
-	 * Delete child files/folders of backupsDir with a filename ending in
-	 * milliseconds that is older than deleteAfter milliseconds in age.
-	 */
-	public static void deleteOldBackups(File backupsDir, long deleteAfter) {
-	
-		synchronized(backupsDir) {
-			
-			TreeSet<Long> deleted = new TreeSet<Long>();
-			if (backupsDir.isDirectory()) {
-				File[] children = backupsDir.listFiles();
-				if (children != null) {
-					for (File child : children) {
-						try {
-							String filename = child.getName();
-							if (child.isFile()) {
-								if (filename.contains("."))
-									filename = filename.split("\\.")[0];
-							}
-							String[] tokens = filename.split(" ");
-							String lastToken = tokens[tokens.length - 1];
-							long timeMade = Long.parseLong(lastToken);
-							
-							if (timeMade >= 0) {
-								long age = System.currentTimeMillis() - timeMade;
-								if (age >= deleteAfter) {
-									deleteFile(child);
-									deleted.add(age);
-								}
-							}
-						} catch (Exception e) {
-							// Ignore file as it doesn't follow the backup
-							// format.
-						}
-					}
-				}
-			}
-			
-			if (deleted.size() > 0) {
-				System.out.println(String.format("[Towny] Deleting %d Old Backups (%s).", deleted.size(), (deleted.size() > 1 ? String.format("%d-%d days old", TimeUnit.MILLISECONDS.toDays(deleted.first()), TimeUnit.MILLISECONDS.toDays(deleted.last())) : String.format("%d days old", TimeUnit.MILLISECONDS.toDays(deleted.first())))));
-			}
-		}
-	}
-	
-	public synchronized static void deleteUnusedFiles(File residentDir, Set<String> fileNames) {
-	
-		synchronized(residentDir) {
-			
-			int count = 0;
-			
-			if (residentDir.isDirectory()) {
-				File[] children = residentDir.listFiles();
-				if (children != null) {
-					for (File child : children) {
-						try {
-							String filename = child.getName();
-							if (child.isFile()) {
-								if (filename.contains(".txt"))
-									filename = filename.split("\\.txt")[0];
-								
-								// Delete the file if there is no matching
-								// resident.
-								if (!fileNames.contains(filename.toLowerCase())) {
-									deleteFile(child);
-									count++;
-								}
-							}
-							
-						} catch (Exception e) {
-							// Ignore file
-						}
-					}
-					
-					if (count > 0) {
-						System.out.println(String.format("[Towny] Deleted %d old files.", count));
-					}
-				}
-			}
-		}
-		
-	}
 }
